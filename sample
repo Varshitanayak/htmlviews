@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call Center Queue Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .controls {
+      margin: 20px 0;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      border: none;
+      background: #4CAF50;
+      color: white;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .queue-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .caller {
+      padding: 15px;
+      margin: 5px;
+      background: #2196F3;
+      color: white;
+      border-radius: 8px;
+      min-width: 60px;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: slideIn 0.4s forwards;
+    }
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes slideOut {
+      to {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+    }
+    .info {
+      margin: 15px;
+      font-size: 18px;
+    }
+    input[type=number] {
+      padding: 5px;
+      font-size: 14px;
+      width: 80px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📞 Call Center Queue Management</h1>
+  <div class="controls">
+    <input type="number" id="capacityInput" placeholder="Queue Size" min="1">
+    <button onclick="setCapacity()">Set Capacity</button>
+    <button onclick="addCaller()">Add Caller</button>
+    <button onclick="answerCall()">Answer Call</button>
+    <button onclick="resetQueue()">Reset</button>
+  </div> <div class="info" id="queueInfo">Queue not started</div> <div class="queue-container" id="queueContainer"></div> <script>
+    let queue = [];
+    let capacity = null;
+    let callerId = 1;
+
+    function setCapacity() {
+      const input = document.getElementById('capacityInput').value;
+      capacity = parseInt(input);
+      queue = [];
+      callerId = 1;
+      updateDisplay();
+    }
+
+    function addCaller() {
+      if (capacity === null) {
+        alert('Please set capacity first!');
+        return;
+      }
+      if (queue.length >= capacity) {
+        alert('Queue is full! Caller missed.');
+        return;
+      }
+      queue.push("Caller " + callerId++);
+      updateDisplay();
+    }
+
+    function answerCall() {
+      if (queue.length === 0) {
+        alert('No callers waiting.');
+        return;
+      }
+      const served = queue.shift();
+      const container = document.getElementById('queueContainer');
+      const firstCaller = container.firstChild;
+      if (firstCaller) {
+        firstCaller.style.animation = 'slideOut 0.4s forwards';
+        setTimeout(() => {
+          alert(served + ' is being answered.');
+          updateDisplay();
+        }, 400);
+      } else {
+        updateDisplay();
+      }
+    }
+
+    function resetQueue() {
+      queue = [];
+      callerId = 1;
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      const info = document.getElementById('queueInfo');
+      const container = document.getElementById('queueContainer');
+      container.innerHTML = '';
+
+      if (capacity === null) {
+        info.innerText = 'Queue not started';
+        return;
+      }
+
+      info.innerText = `Queue Size: ${queue.length} / ${capacity}`;
+
+      queue.forEach(caller => {
+        const div = document.createElement('div');
+        div.className = 'caller';
+        div.innerText = caller;
+        container.appendChild(div);
+      });
+    }
+  </script></body>
+</html>
